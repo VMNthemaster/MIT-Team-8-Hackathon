@@ -22,7 +22,6 @@ app.use(cors())
 app.use(express.json())
 
 // routes
-// app.use('/api/trial', trialRouter) 
 app.use('/api/2022', year2022Router) 
 app.use('/api/2021', year2021Router) 
 app.use('/api/2020', year2020Router) 
