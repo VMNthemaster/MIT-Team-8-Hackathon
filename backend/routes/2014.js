@@ -240,4 +240,37 @@ year2014Router.post('/monthlyData', async (req, res) => {
     return res.json({success: true, newArray, firstMonth: 'Jan', lastMonth: 'Aug'})
 })
 
+year2014Router.post('/exchangerate', async (req, res) => {
+    const {firstCurrency, secondCurrency, day, month, year} = req.body
+    const list = [firstCurrency, secondCurrency]
+    let allDocuments
+
+    try {
+        if(day < 10){
+            allDocuments = await year2014.findOne({Date: `${day}-${month}-${year}`})
+            if(!allDocuments){
+            allDocuments = await year2014.findOne({Date: `0${day}-${month}-${year}`})
+            }
+        }
+        else{
+            allDocuments = await year2014.findOne({Date: `${day}-${month}-${year}`})
+        }
+
+    } catch (error) {
+        return res.json({success: false, message: 'Problems in fetching data....'}) 
+    }
+
+    if(!allDocuments){
+        return res.json({success: false, message: 'No data found'})
+    }
+
+    if(allDocuments[`${list[0]}`] === "" || allDocuments[`${list[1]}`] === ""){
+        return res.json({success: false, message: 'Data does not exist for the requested day'})
+    }
+
+    const value = Number(allDocuments[`${list[1]}`])/Number(allDocuments[`${list[0]}`])
+
+    return res.json({success: true, value, message: 'Successfully fetched value'})
+})
+
 export default year2014Router 
